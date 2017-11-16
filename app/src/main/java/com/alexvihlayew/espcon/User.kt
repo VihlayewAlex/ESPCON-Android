@@ -1,17 +1,14 @@
 package com.alexvihlayew.espcon
 
+import io.realm.RealmObject
+
 /**
  * Created by alexvihlayew on 16/11/2017.
  */
 
-class User {
+open class User: RealmObject() {
 
-    val email: String
-    val password: String
-
-    constructor(email: String, password: String) {
-        this.email = email
-        this.password = password
-    }
+    var email: String? = null
+    var password: String? = null
 
 }
