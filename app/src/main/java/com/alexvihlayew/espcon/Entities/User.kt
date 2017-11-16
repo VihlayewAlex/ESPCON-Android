@@ -1,4 +1,4 @@
-package com.alexvihlayew.espcon
+package com.alexvihlayew.espcon.Entities
 
 import io.realm.RealmObject
 

@@ -1,9 +1,14 @@
-package com.alexvihlayew.espcon
+package com.alexvihlayew.espcon.Modules
 
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import com.alexvihlayew.espcon.Modules.Auth.AuthTabActivity
+import com.alexvihlayew.espcon.Other.let
+import com.alexvihlayew.espcon.Modules.Main.MainTabActivity
+import com.alexvihlayew.espcon.R
+import com.alexvihlayew.espcon.Entities.User
 import io.realm.Realm
 
 class MainActivity : AppCompatActivity() {
@@ -26,8 +31,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun route() {
-        getCurrentlySignedUser()?.let(fulfill = { user ->
-            Log.d("MainActivity", "Logged in as: $user")
+        getCurrentlySignedUser().let(fulfill = { user ->
+            Log.d("MainActivity", "Logged in as: ${user.email}")
             routeToMain(user)
         }, reject = {
             Log.d("MainActivity","Need to log in")
@@ -36,20 +41,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun routeToMain(user: User) {
+        Log.d("MainActivity","Routing to Main..")
         val intent = Intent(this@MainActivity, MainTabActivity::class.java)
         startActivity(intent)
     }
 
     private fun routeToAuth() {
+        Log.d("MainActivity","Routing to Auth..")
         val intent = Intent(this@MainActivity, AuthTabActivity::class.java)
         startActivity(intent)
     }
 
     private fun getCurrentlySignedUser(): User? {
         val user = User()
-        user.email = "vihlayew.alex@gmail.com"
-        user.password = "haversin2X"
-        return user
+        user.email = "EMAIL"
+        user.password = "PASSWORD"
+        return null
     }
 
 }
