@@ -1,5 +1,6 @@
 package com.alexvihlayew.espcon
 
+import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -27,9 +28,21 @@ class MainActivity : AppCompatActivity() {
     private fun route() {
         getCurrentlySignedUser()?.let(fulfill = { user ->
             Log.d("MainActivity", "Logged in as: $user")
+            routeToMain(user)
         }, reject = {
             Log.d("MainActivity","Need to log in")
+            routeToAuth()
         })
+    }
+
+    private fun routeToMain(user: User) {
+        val intent = Intent(this@MainActivity, MainTabActivity::class.java)
+        startActivity(intent)
+    }
+
+    private fun routeToAuth() {
+        val intent = Intent(this@MainActivity, AuthTabActivity::class.java)
+        startActivity(intent)
     }
 
     private fun getCurrentlySignedUser(): User? {
