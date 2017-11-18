@@ -9,6 +9,7 @@ import com.alexvihlayew.espcon.Other.let
 import com.alexvihlayew.espcon.Modules.Main.MainTabActivity
 import com.alexvihlayew.espcon.R
 import com.alexvihlayew.espcon.Entities.User
+import com.alexvihlayew.espcon.Entities.UserInfo
 import com.alexvihlayew.espcon.Services.DatabaseService
 import io.realm.Realm
 import java.util.*
@@ -34,16 +35,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun route() {
-        DatabaseService.shared().getUser().let(fulfill = { user ->
-            Log.d("MainActivity", "Logged in as: ${user.email}")
-            routeToMain(user)
+        DatabaseService.shared().getUserInfo().let(fulfill = { userInfo ->
+            Log.d("MainActivity", "Logged in as: ${userInfo.userEmail}")
+            routeToMain(userInfo)
         }, reject = {
             Log.d("MainActivity","Need to log in")
             routeToAuth()
         })
     }
 
-    private fun routeToMain(user: User) {
+    private fun routeToMain(user: UserInfo) {
         Log.d("MainActivity","Routing to Main..")
         val intent = Intent(this@MainActivity, MainTabActivity::class.java)
         startActivity(intent)

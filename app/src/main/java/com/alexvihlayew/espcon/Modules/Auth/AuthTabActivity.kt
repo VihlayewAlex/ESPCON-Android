@@ -85,6 +85,20 @@ class AuthTabActivity : AppCompatActivity() {
 
     private fun logInWith(email: String, password: String) {
         Log.d("AuthTabActivity", "Logging in with $email, $password")
+        AuthService.shared().logInWith(email, password, completionHandler = { userInfo, exception ->
+            userInfo.let(fulfill = { info ->
+                Log.d("AuthTabActivity","Going back..")
+                finish()
+            }, reject = {
+                exception?.let { except ->
+                    val alert = AlertDialog.Builder(this@AuthTabActivity).create()
+                    alert.setTitle("Error")
+                    alert.setMessage(except.message)
+                    alert.setButton(AlertDialog.BUTTON_NEUTRAL, "Ok", { _, _ -> })
+                    alert.show()
+                }
+            })
+        })
     }
 
     private fun signInWith(name: String, email: String, password: String) {
@@ -97,8 +111,7 @@ class AuthTabActivity : AppCompatActivity() {
                 alert.setButton(AlertDialog.BUTTON_NEUTRAL, "Ok", { _, _ -> })
                 alert.show()
             }, reject = {
-                Log.d("AuthTabActivity","Going back..")
-                finish()
+                this.logInWith(email, password)
             })
         })
     }
