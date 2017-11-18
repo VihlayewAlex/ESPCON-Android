@@ -2,13 +2,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/navigation_sign_in"
-        android:icon="@drawable/ic_home_black_24dp"
-        android:title="@string/title_sign_in" />
+        android:id="@+id/navigation_log_in"
+        android:icon="@mipmap/login"
+        android:title="@string/title_log_in" />
 
     <item
-        android:id="@+id/navigation_log_in"
-        android:icon="@drawable/ic_dashboard_black_24dp"
-        android:title="@string/title_log_in" />
+        android:id="@+id/navigation_sign_in"
+        android:icon="@mipmap/signin"
+        android:title="@string/title_sign_in" />
 
 </menu>

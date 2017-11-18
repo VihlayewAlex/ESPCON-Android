@@ -10,6 +10,8 @@ import com.alexvihlayew.espcon.Modules.Main.MainTabActivity
 import com.alexvihlayew.espcon.R
 import com.alexvihlayew.espcon.Entities.User
 import io.realm.Realm
+import java.util.*
+import kotlin.concurrent.timerTask
 
 class MainActivity : AppCompatActivity() {
 
@@ -23,7 +25,7 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
-        route()
+        Timer().schedule(timerTask { route() }, 2000)
     }
 
     private fun configureRealm()  {
