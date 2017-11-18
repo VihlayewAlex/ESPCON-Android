@@ -16,6 +16,15 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <EditText
+            android:id="@+id/nameSignIn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:hint="Name"
+            android:inputType="textEmailAddress"
+            android:textColorLink="@color/colorPrimaryDark" />
+
+        <EditText
             android:id="@+id/emailSignIn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -33,11 +42,22 @@
             android:inputType="textPassword"
             android:textColorLink="@color/colorPrimaryDark" />
 
+        <EditText
+            android:id="@+id/confirmPasswordSignIn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:hint="Confirm password"
+            android:inputType="textPassword"
+            android:textColorLink="@color/colorPrimaryDark" />
+
         <Button
             android:id="@+id/buttonSignIn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
+            android:background="@color/colorPrimary"
+            android:textColor="@android:color/white"
             android:text="Sign In" />
     </LinearLayout>
 

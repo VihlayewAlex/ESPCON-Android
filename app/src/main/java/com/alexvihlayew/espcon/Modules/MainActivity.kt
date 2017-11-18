@@ -9,6 +9,7 @@ import com.alexvihlayew.espcon.Other.let
 import com.alexvihlayew.espcon.Modules.Main.MainTabActivity
 import com.alexvihlayew.espcon.R
 import com.alexvihlayew.espcon.Entities.User
+import com.alexvihlayew.espcon.Services.DatabaseService
 import io.realm.Realm
 import java.util.*
 import kotlin.concurrent.timerTask
@@ -33,7 +34,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun route() {
-        getCurrentlySignedUser().let(fulfill = { user ->
+        DatabaseService.shared().getUser().let(fulfill = { user ->
             Log.d("MainActivity", "Logged in as: ${user.email}")
             routeToMain(user)
         }, reject = {
@@ -52,13 +53,6 @@ class MainActivity : AppCompatActivity() {
         Log.d("MainActivity","Routing to Auth..")
         val intent = Intent(this@MainActivity, AuthTabActivity::class.java)
         startActivity(intent)
-    }
-
-    private fun getCurrentlySignedUser(): User? {
-        val user = User()
-        user.email = "EMAIL"
-        user.password = "PASSWORD"
-        return null
     }
 
 }

@@ -1,12 +1,12 @@
 <resources>
     <string name="app_name">ESPCON</string>
 
-    <string name="title_activity_auth_tab">AuthTabActivity</string>
+    <string name="title_activity_auth_tab">Auth</string>
 
     <string name="title_devices_list">Devices list</string>
     <string name="title_add_device">Add device</string>
 
-    <string name="title_activity_main_tab">MainTabActivity</string>
+    <string name="title_activity_main_tab">Main</string>
 
     <string name="title_log_in">Log in</string>
     <string name="title_sign_in">Sign in</string>

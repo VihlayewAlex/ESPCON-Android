@@ -1,14 +1,19 @@
 package com.alexvihlayew.espcon.Modules.Auth
 
+import android.app.Activity
+import android.app.AlertDialog
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentTransaction
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.widget.Toast
 import com.alexvihlayew.espcon.Modules.Auth.Fragments.LogInFragment
 import com.alexvihlayew.espcon.Modules.Auth.Fragments.SignInFragment
+import com.alexvihlayew.espcon.Other.let
 import com.alexvihlayew.espcon.R
+import com.alexvihlayew.espcon.Services.AuthService
 import kotlinx.android.synthetic.main.activity_auth_tab.*
 
 class AuthTabActivity : AppCompatActivity() {
@@ -47,6 +52,7 @@ class AuthTabActivity : AppCompatActivity() {
         val fragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.add(R.id.auth_frame_layout, fragmentOfType(AuthFragment.LOG_IN))
         fragmentTransaction.commit()
+        supportActionBar?.title = "Log In"
     }
 
     private fun switchToFragment(newFragment: AuthFragment) {
@@ -55,22 +61,46 @@ class AuthTabActivity : AppCompatActivity() {
         val fragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.auth_frame_layout, targetFragment)
         fragmentTransaction.commit()
+        supportActionBar?.title = when (newFragment) {
+            AuthFragment.LOG_IN -> "Log In"
+            AuthFragment.SIGN_IN -> "Sign In"
+        }
     }
 
     private fun fragmentOfType(type: AuthFragment): Fragment {
         return when (type) {
             AuthFragment.LOG_IN -> LogInFragment().also { fragment ->
                 fragment.setLogInClosure(closure = { email, password ->
-                    Log.d("AuthTabActivity", "Logging in with $email, $password")
+                    logInWith(email, password)
                 })
             }
             AuthFragment.SIGN_IN -> SignInFragment().also { fragment ->
-                fragment.setSignInClosure(closure = { email, password ->
-                    Log.d("AuthTabActivity", "Signing in with $email, $password")
+                fragment.setSignInClosure(closure = { name, email, password ->
+                    signInWith(name, email, password)
                 })
             }
         }
 
+    }
+
+    private fun logInWith(email: String, password: String) {
+        Log.d("AuthTabActivity", "Logging in with $email, $password")
+    }
+
+    private fun signInWith(name: String, email: String, password: String) {
+        Log.d("AuthTabActivity", "Signing in with $email, $password")
+        AuthService.shared().signInWith(name, email, password, completionHandler = { fuelError ->
+            fuelError.let(fulfill = { err ->
+                val alert = AlertDialog.Builder(this@AuthTabActivity).create()
+                alert.setTitle("Error")
+                alert.setMessage(err.message)
+                alert.setButton(AlertDialog.BUTTON_NEUTRAL, "Ok", { _, _ -> })
+                alert.show()
+            }, reject = {
+                Log.d("AuthTabActivity","Going back..")
+                finish()
+            })
+        })
     }
 
 }
