@@ -45,19 +45,32 @@ class AuthTabActivity : AppCompatActivity() {
     private fun configureInitialFragment() {
         val fragmentManager = supportFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()
-        fragmentTransaction.add(R.id.auth_frame_layout, LogInFragment())
+        fragmentTransaction.add(R.id.auth_frame_layout, fragmentOfType(AuthFragment.LOG_IN))
         fragmentTransaction.commit()
     }
 
     private fun switchToFragment(newFragment: AuthFragment) {
         val fragmentManager = supportFragmentManager
-        val targetFragment = when (newFragment) {
-            AuthFragment.LOG_IN -> LogInFragment()
-            AuthFragment.SIGN_IN -> SignInFragment()
-        }
+        val targetFragment = fragmentOfType(newFragment)
         val fragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.auth_frame_layout, targetFragment)
         fragmentTransaction.commit()
+    }
+
+    private fun fragmentOfType(type: AuthFragment): Fragment {
+        return when (type) {
+            AuthFragment.LOG_IN -> LogInFragment().also { fragment ->
+                fragment.setLogInClosure(closure = { email, password ->
+                    Log.d("AuthTabActivity", "Logging in with $email, $password")
+                })
+            }
+            AuthFragment.SIGN_IN -> SignInFragment().also { fragment ->
+                fragment.setSignInClosure(closure = { email, password ->
+                    Log.d("AuthTabActivity", "Signing in with $email, $password")
+                })
+            }
+        }
+
     }
 
 }
