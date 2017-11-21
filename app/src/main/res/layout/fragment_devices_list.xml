@@ -5,10 +5,12 @@
     android:background="#EBEBEB"
     tools:context="com.alexvihlayew.espcon.Modules.Main.Fragments.DevicesListFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <ListView
+        android:id="@+id/devices_list_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Devices list" />
+        android:layout_height="match_parent">
+
+
+    </ListView>
 
 </FrameLayout>
