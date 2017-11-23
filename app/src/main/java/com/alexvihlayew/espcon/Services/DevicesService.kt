@@ -16,14 +16,22 @@ class DevicesService {
         fun shared() = sharedInstance
     }
 
-    fun addNew(device: ESPCONDevice, withCompletionHandler: (Exception?) -> Unit) {
+    fun addNew(device: ESPCONDevice, withCompletionHandler: (Int?, Exception?) -> Unit) {
         Fuel.post(addDeviceURL, listOf("user_id" to device.userID, "device_name" to device.deviceName,
                                         "ssid" to device.ssid, "password" to device.password,
                                         "mac_address" to device.MACaddress)).response(handler = { request, response, result ->
             result.fold(success = { data ->
-                withCompletionHandler.invoke(null)
+                val jsonString = String(data)
+                val obj = JSONObject(jsonString)
+                Log.d("DevicesService", obj.toString())
+                if (obj.has("id")) {
+                    val id = obj.getInt("id")
+                    withCompletionHandler.invoke(id, null)
+                } else {
+                    withCompletionHandler.invoke(null, Exception("Invalid server response"))
+                }
             }, failure = { error ->
-                withCompletionHandler.invoke(error)
+                withCompletionHandler.invoke(null, error)
             })
         })
     }
@@ -54,8 +62,10 @@ class DevicesService {
         })
     }
 
-    fun setStateFor(device: ESPCONDevice, toState: Boolean, withCompletionHandler: (Exception?) -> Unit) {
-        Fuel.post(setState + "?device_id=${device.deviceID}&on_off=${device.isOn}").response(handler = { request, response, result ->
+    fun switchStateFor(device: ESPCONDevice, withCompletionHandler: (Exception?) -> Unit) {
+        val state = if (device.isOn == "true") { "false" } else { "true" }
+        Log.d("DevicesService", state)
+        Fuel.post(setState + "?device_id=${device.deviceID}&on_off=$state").response(handler = { request, response, result ->
             result.fold(success = { data ->
                 withCompletionHandler.invoke(null)
             }, failure = { error ->
