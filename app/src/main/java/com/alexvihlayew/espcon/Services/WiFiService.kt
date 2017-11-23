@@ -16,6 +16,8 @@ import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 import java.net.HttpURLConnection
 import java.net.URL
+import java.util.*
+import kotlin.concurrent.schedule
 
 
 /**
@@ -39,18 +41,31 @@ class WiFiService {
         if (!isRegisteredForWiFiStatusUpdates) {
             val receiver = WifiReceiver()
             receiver._callback = {
-                doAsync {
-                    val requestString = "http://192.168.4.1/ssid_name:$SSID;ssid_pass:$password;user_id:$userID;device_id:$deviceID;server:$server;mac:$randomUID;"
-                    val connection = URL(requestString).openConnection() as HttpURLConnection
-                    try {
-                        val data = connection.inputStream.bufferedReader().readText()
-                        uiThread {
-                            Log.d("WiFiService", data)
+                for (i in 0..5) {
+                    Timer("WiFiCallback", false).schedule((500 * i).toLong(), action = {
+                        doAsync {
+                            val requestString = "http://192.168.4.1/ssid_name:" + SSID + ";ssid_pass:" + password + ";user_id:" + userID + ";device_id:" + deviceID + ";server:" + server + ";mac:" + randomUID + ";"
+                            val connection = URL(requestString).openConnection() as HttpURLConnection
+                            try {
+                                val data = connection.inputStream.bufferedReader().readText()
+                                uiThread {
+                                    Log.d("WiFiService", data)
+                                }
+                            } finally {
+                                Log.d("WiFiService", "Disconnecting..")
+                                connection.disconnect()
+                            }
                         }
-                    } finally {
-                        Log.d("WiFiService", "Disconnecting..")
-                        connection.disconnect()
-                    }
+                        if (i == 4) {
+                            val wifiManager = withContext.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+                            val networkName = wifiManager.connectionInfo.ssid
+                            val networkId = wifiManager.connectionInfo.networkId
+                            if (networkName == "ESP32DEV") {
+                                wifiManager.removeNetwork(networkId)
+                                wifiManager.saveConfiguration()
+                            }
+                        }
+                    })
                 }
             }
             val intentFilter = IntentFilter()

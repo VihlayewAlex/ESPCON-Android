@@ -47,6 +47,10 @@ class AuthTabActivity : AppCompatActivity() {
         configureInitialFragment()
     }
 
+    override fun onBackPressed() {
+        //super.onBackPressed()
+    }
+
     private fun configureInitialFragment() {
         val fragmentManager = supportFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()

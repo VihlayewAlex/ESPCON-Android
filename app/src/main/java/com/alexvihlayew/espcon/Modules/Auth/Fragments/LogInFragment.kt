@@ -4,6 +4,7 @@ package com.alexvihlayew.espcon.Modules.Auth.Fragments
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -40,11 +41,26 @@ class LogInFragment : Fragment() {
     fun configureLogInButton() {
         val button = this.view?.findViewById<Button>(R.id.buttonLogIn)
         button?.setOnClickListener { _ ->
-            val email = this.view?.findViewById<EditText>(R.id.emailLogIn)?.text.toString()
-            val password = this.view?.findViewById<EditText>(R.id.passwordLogIn)?.text.toString()
-            Log.d("LogInFragment", "Captured: $email, $password")
-            logInClosure?.invoke(email, password)
+            login()
         }
+    }
+
+    fun login() {
+        val email = this.view?.findViewById<EditText>(R.id.emailLogIn)?.text.toString()
+        val password = this.view?.findViewById<EditText>(R.id.passwordLogIn)?.text.toString()
+
+        if (email == "" || password == "") {
+            val alert = AlertDialog.Builder(activity).create()
+            alert.setTitle("Invalid input")
+            alert.setMessage("Fields cannot be empty")
+            alert.setButton(AlertDialog.BUTTON_NEUTRAL, "Ok", { _, _ -> })
+            alert.show()
+
+            return
+        }
+
+        Log.d("LogInFragment", "Captured: $email, $password")
+        logInClosure?.invoke(email, password)
     }
 
 }// Required empty public constructor

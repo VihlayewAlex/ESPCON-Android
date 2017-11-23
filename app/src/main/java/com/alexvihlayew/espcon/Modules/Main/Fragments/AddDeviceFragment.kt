@@ -2,6 +2,7 @@ package com.alexvihlayew.espcon.Modules.Main.Fragments
 
 
 
+import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.app.AlertDialog
@@ -18,8 +19,16 @@ import com.alexvihlayew.espcon.R
 import com.alexvihlayew.espcon.Services.DatabaseService
 import com.alexvihlayew.espcon.Services.DevicesService
 import com.alexvihlayew.espcon.Services.WiFiService
+import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.uiThread
+import java.net.HttpURLConnection
+import java.net.URL
 
 import java.util.*
+import android.content.Context.WIFI_SERVICE
+import android.net.wifi.WifiManager
+
+
 
 
 /**
@@ -66,12 +75,16 @@ class AddDeviceFragment : Fragment() {
             alert.setMessage("Passwords must match")
             alert.setButton(AlertDialog.BUTTON_NEUTRAL, "Ok", { _, _ -> })
             alert.show()
+
+            return
         } else if (ssid == "" || deviceName == "") {
             val alert = AlertDialog.Builder(activity).create()
             alert.setTitle("Invalid input")
             alert.setMessage("Fields cannot be empty")
             alert.setButton(AlertDialog.BUTTON_NEUTRAL, "Ok", { _, _ -> })
             alert.show()
+
+            return
         }
 
         val device = ESPCONDevice()
@@ -85,6 +98,7 @@ class AddDeviceFragment : Fragment() {
             id.let(fulfill = { deviceID ->
                 deviceUIDs.set(deviceID, UUID)
                 view?.findViewById<TextView>(R.id.fieldDeviceID)?.text = id.toString()
+                enableWiFi()
             }, reject = {
                 exception?.let { error ->
                     Log.d("AddDeviceFragment", error.message)
@@ -116,6 +130,7 @@ class AddDeviceFragment : Fragment() {
             alert.setMessage("Fields cannot be empty")
             alert.setButton(AlertDialog.BUTTON_NEUTRAL, "Ok", { _, _ -> })
             alert.show()
+
             return
         }
 
@@ -123,6 +138,11 @@ class AddDeviceFragment : Fragment() {
         val randomUID = deviceUIDs.getValue(deviceID.toInt())
 
         WiFiService.shared().connectToWiFiDevice(activity, ssid, password, userID, deviceID, server, randomUID)
+    }
+
+    private fun enableWiFi() {
+        val wifiManager = this.context.getSystemService(Context.WIFI_SERVICE) as WifiManager
+        wifiManager.isWifiEnabled = true
     }
 
     private fun signOut() {
