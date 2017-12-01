@@ -35,16 +35,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun route() {
-        DatabaseService.shared().getUserInfo().let(fulfill = { userInfo ->
-            Log.d("MainActivity", "Logged in as: ${userInfo.userEmail}")
-            routeToMain(userInfo)
+        DatabaseService.shared().getUser().let(fulfill = { user ->
+            Log.d("MainActivity", "Logged in as: ${user.email}")
+            routeToMain(user)
         }, reject = {
             Log.d("MainActivity","Need to log in")
             routeToAuth()
         })
     }
 
-    private fun routeToMain(user: UserInfo) {
+    private fun routeToMain(user: User) {
         Log.d("MainActivity","Routing to Main..")
         val intent = Intent(this@MainActivity, MainTabActivity::class.java)
         startActivity(intent)

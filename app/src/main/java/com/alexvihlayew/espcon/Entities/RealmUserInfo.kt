@@ -7,7 +7,7 @@ import io.realm.RealmObject
  */
 open class RealmUserInfo: RealmObject() {
 
-    var userID: String? = null
+    var userID: Int? = null
     var userName: String? = null
     var userEmail: String? = null
     var userPassword: String? = null

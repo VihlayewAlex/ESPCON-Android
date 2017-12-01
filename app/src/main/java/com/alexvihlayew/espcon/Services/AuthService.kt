@@ -47,7 +47,7 @@ class AuthService {
         })
     }
 
-    fun logInWith(email: String, password: String, completionHandler: (UserInfo?, Exception?) -> Unit) {
+    fun logInWith(email: String, password: String, completionHandler: (User?, Exception?) -> Unit) {
         Fuel.post(logInURL, listOf("username" to email,"password" to password)).response(handler = { request, response, result ->
             result.fold(success = { data ->
                 val jsonString = String(data)
@@ -55,24 +55,26 @@ class AuthService {
                 val status = obj.getString("status")
                 val message = obj.getString("msg")
                 if (status == "success") {
+                    Log.d("AuthService", "status is success")
                     val userInfo = obj.getJSONObject("user_info")
-                    val userID = userInfo.getString("user_id")
+                    val userID = userInfo.getInt("user_id")
                     val userName = userInfo.getString("user_name")
                     val userEmail = userInfo.getString("user_email")
                     val password = userInfo.getString("password")
                     val otpCode = userInfo.getString("otp_code")
                     val access = userInfo.getString("access")
-                    val usrInfo = UserInfo().also { info ->
+                    val usr = UserInfo().also { info ->
                         info.userID = userID
                         info.userName = userName
                         info.userEmail = userEmail
                         info.userPassword = password
                         info.otpCode = otpCode
                         info.access = access
-                    }
-                    DatabaseService.shared().saveUserInfo(usrInfo)
-                    completionHandler.invoke(usrInfo, null)
+                    }.toUser()
+                    DatabaseService.shared().saveUser(usr)
+                    completionHandler.invoke(usr, null)
                 } else {
+                    Log.d("AuthService", "status is NOT success")
                     val exception = Exception(message)
                     completionHandler.invoke(null, exception)
                 }
