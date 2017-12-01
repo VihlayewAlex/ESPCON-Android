@@ -21,7 +21,8 @@ class DatabaseService {
     fun saveUser(user: User) {
         deleteUser()
         Log.d("DatabaseService", "Saving user..")
-        Realm.getDefaultInstance().executeTransaction {
+        val realm = Realm.getDefaultInstance()
+        realm.executeTransaction {
             val userToSave = Realm.getDefaultInstance().createObject(RealmUser::class.java).also { usr ->
                 usr.userID = user.id
                 usr.name = user.name
@@ -29,21 +30,26 @@ class DatabaseService {
                 usr.password = user.password
             }
         }
+        realm.close()
         Log.d("DatabaseService", "Saved user")
     }
 
     fun getUser(): User? {
         Log.d("DatabaseService", "Getting user..")
-        val user = Realm.getDefaultInstance().where(RealmUser::class.java).findFirst()?.getUser()
+        val realm = Realm.getDefaultInstance()
+        val user = realm.where(RealmUser::class.java).findFirst()?.getUser()
+        realm.close()
         Log.d("DatabaseService", "Get user")
         return user
     }
 
     fun deleteUser() {
         Log.d("DatabaseService", "Deleting user..")
-        Realm.getDefaultInstance().executeTransaction {
+        val realm = Realm.getDefaultInstance()
+        realm.executeTransaction {
             Realm.getDefaultInstance().delete(RealmUser::class.java)
         }
+        realm.close()
         Log.d("DatabaseService", "Deleted user")
     }
 
@@ -51,7 +57,8 @@ class DatabaseService {
     fun saveUserInfo(userInfo: UserInfo) {
         deleteUserInfo()
         Log.d("DatabaseService", "Saving user info..")
-        Realm.getDefaultInstance().executeTransaction {
+        val realm = Realm.getDefaultInstance()
+        realm.executeTransaction {
             val userInfoToSave = Realm.getDefaultInstance().createObject(RealmUserInfo::class.java).also { info ->
                 info.userID = userInfo.userID
                 info.userName = userInfo.userName
@@ -61,29 +68,36 @@ class DatabaseService {
                 info.access = userInfo.access
             }
         }
+        realm.close()
         Log.d("DatabaseService", "Saved user info")
     }
 
     fun getUserInfo(): UserInfo? {
         Log.d("DatabaseService", "Getting user info..")
-        val userInfo = Realm.getDefaultInstance().where(RealmUserInfo::class.java).findFirst()?.getUserInfo()
+        val realm = Realm.getDefaultInstance()
+        val userInfo = realm.where(RealmUserInfo::class.java).findFirst()?.getUserInfo()
+        realm.close()
         Log.d("DatabaseService", "Get user info")
         return userInfo
     }
 
     fun deleteUserInfo() {
         Log.d("DatabaseService", "Deleting user info..")
-        Realm.getDefaultInstance().executeTransaction {
+        val realm = Realm.getDefaultInstance()
+        realm.executeTransaction {
             Realm.getDefaultInstance().delete(RealmUserInfo::class.java)
         }
+        realm.close()
         Log.d("DatabaseService", "Deleted user info")
     }
 
 
     fun deleteAll() {
-        Realm.getDefaultInstance().executeTransaction {
+        val realm = Realm.getDefaultInstance()
+        realm.executeTransaction {
             Realm.getDefaultInstance().deleteAll()
         }
+        realm.close()
     }
 
 }

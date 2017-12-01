@@ -33,13 +33,18 @@ class DevicesListFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_devices_list, container, false)
     }
 
-    override fun onStart() {
-        super.onStart()
+    override fun onResume() {
+        super.onResume()
 
         configureListView()
         DevicesService.shared().getDevicesList(withCompletionHandler = { list, exception ->
             exception?.let {
                 Log.d("DevicesListFragment", exception.message)
+                val alert = AlertDialog.Builder(activity).create()
+                alert.setTitle("Error loading devices list")
+                alert.setMessage(exception.message)
+                alert.setButton(AlertDialog.BUTTON_NEUTRAL, "Ok", { _, _ -> })
+                alert.show()
             }
             list?.let {
                 Log.d("DevicesListFragment", "Displaying devices")
@@ -100,12 +105,12 @@ class DevicesListFragment : Fragment() {
             val delButton = cell.findViewById<Button>(R.id.delete_device_button)
             val device = devicesList.filter { it.isOn != "del" }.get(position)
             deviceName.text = device.deviceName
-            stateSwitch.isChecked = (device.isOn == "true")
+            stateSwitch.isChecked = (device.isOn == "on")
             stateSwitch.setOnClickListener { _ ->
                 Log.d("DeviceListFragment", "About to toggle state of device $position")
                 DevicesService.shared().switchStateFor(device, withCompletionHandler = { error ->
                     Log.d("DevicesListFragment", error?.message ?: "Set state success to ${stateSwitch.isChecked}")
-                    device.isOn = if (device.isOn == "true") { "false" } else { "true" }
+                    device.isOn = if (device.isOn == "on") { "off" } else { "on" }
                     this.notifyDataSetChanged()
                 })
             }

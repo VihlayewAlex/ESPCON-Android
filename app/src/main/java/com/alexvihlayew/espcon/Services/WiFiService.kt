@@ -38,6 +38,9 @@ class WiFiService {
                             deviceID: String,
                             server: String,
                             randomUID: String) {
+        val wifiTurnOnManager = withContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+        wifiTurnOnManager.isWifiEnabled = true
+
         if (!isRegisteredForWiFiStatusUpdates) {
             val receiver = WifiReceiver()
             receiver._callback = {
@@ -64,6 +67,7 @@ class WiFiService {
                                 wifiManager.removeNetwork(networkId)
                                 wifiManager.saveConfiguration()
                             }
+                            Log.d("WiFiService", "Removed network")
                         }
                     })
                 }
@@ -78,7 +82,11 @@ class WiFiService {
 
         val conf = WifiConfiguration()
         conf.SSID = "\"" + networkSSID + "\""
-        conf.preSharedKey = "\""+ networkPass +"\""
+        if (networkPass == "") {
+            conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE)
+        } else {
+            conf.preSharedKey = "\"" + networkPass + "\""
+        }
 
         val wifiManager = withContext.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
         wifiManager.addNetwork(conf)

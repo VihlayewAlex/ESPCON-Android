@@ -37,15 +37,17 @@ class DevicesService {
     }
 
     fun getDevicesList(withCompletionHandler: (List<ESPCONDevice>?, Exception?) -> Unit) {
-        Fuel.get(allDevicesURL + "?user_id=${DatabaseService.shared().getUser()!!.id}").response(handler = { request, response, result ->
-            result.fold(success = { data ->
-                val jsonString = String(data).dropLast(1)
-                val obj = JSONObject(jsonString)
-                val devicesArr = obj.getJSONArray("result")
-                var devices = mutableListOf<ESPCONDevice>()
-                for (deviceIndex in 0..(devicesArr.length()-1)) {
-                    val deviceObj = devicesArr.getJSONObject(deviceIndex)
-                    val device = ESPCONDevice()
+        DatabaseService.shared().getUser()?.id.let(fulfill = { usrID ->
+            Fuel.get(allDevicesURL + "?user_id=$usrID").response(handler = { request, response, result ->
+                result.fold(success = { data ->
+                    val jsonString = String(data).dropLast(1)
+                    val obj = JSONObject(jsonString)
+                    Log.d("__Device", obj.toString())
+                    val devicesArr = obj.getJSONArray("result")
+                    var devices = mutableListOf<ESPCONDevice>()
+                    for (deviceIndex in 0..(devicesArr.length()-1)) {
+                        val deviceObj = devicesArr.getJSONObject(deviceIndex)
+                        val device = ESPCONDevice()
                         device.deviceID = deviceObj.getString("device_id").toInt()
                         device.userID = deviceObj.getString("user_id").toInt()
                         device.deviceName = deviceObj.getString("device_name")
@@ -53,17 +55,20 @@ class DevicesService {
                         device.ssid = deviceObj.getString("wifi_ssid")
                         device.password = deviceObj.getString("wifi_password")
                         device.isOn = deviceObj.getString("device_state")
-                    devices.add(device)
-                }
-                withCompletionHandler.invoke(devices, null)
-            }, failure = { error ->
-                withCompletionHandler.invoke(null, error)
+                        devices.add(device)
+                    }
+                    withCompletionHandler.invoke(devices, null)
+                }, failure = { error ->
+                    withCompletionHandler.invoke(null, error)
+                })
             })
+        }, reject = {
+            withCompletionHandler.invoke(null, Exception("Unable to load user data"))
         })
     }
 
     fun switchStateFor(device: ESPCONDevice, withCompletionHandler: (Exception?) -> Unit) {
-        val state = if (device.isOn == "true") { "false" } else { "true" }
+        val state = if (device.isOn == "on") { "off" } else { "on" }
         Log.d("DevicesService", state)
         Fuel.post(setState + "?device_id=${device.deviceID}&on_off=$state").response(handler = { request, response, result ->
             result.fold(success = { data ->

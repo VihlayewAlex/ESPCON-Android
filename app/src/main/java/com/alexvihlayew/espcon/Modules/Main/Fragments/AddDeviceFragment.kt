@@ -49,6 +49,7 @@ class AddDeviceFragment : Fragment() {
         super.onStart()
 
         configureButtons()
+        enableWiFi()
     }
 
     private fun configureButtons() {
@@ -98,7 +99,6 @@ class AddDeviceFragment : Fragment() {
             id.let(fulfill = { deviceID ->
                 deviceUIDs.set(deviceID, UUID)
                 view?.findViewById<TextView>(R.id.fieldDeviceID)?.text = id.toString()
-                enableWiFi()
             }, reject = {
                 exception?.let { error ->
                     Log.d("AddDeviceFragment", error.message)
